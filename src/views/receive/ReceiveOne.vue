@@ -37,7 +37,8 @@ import { Toast } from 'vant';
 import {
   getVerificationCode,
   getCheckCode,
-  getReceive,
+  getReceivePurview,
+  submitByCard,
 } from '../../api/receive';
 
 let timer = null as any;
@@ -70,24 +71,38 @@ export default defineComponent({
         });
       }
     };
-    const handleSentCode = () => {
-      if (phoneValue.value === '') {
-        Toast('手机号不能为空');
-      } else if (/^[1][3,4,5,6,7,8,9][0-9]{9}$/.test(phoneValue.value)) {
-        if (codeFlag.value) {
+    const handleReceivePurview = () => {
+      getReceivePurview({ phone: phoneValue.value }).then((res: any) => {
+        if (res.code === 200) {
+          const { cardPhoneFirstTime, cardPhoneFirstMoney, surplusNum, total } =
+            res.data;
+          setTimeout(() => {
+            Toast(
+              `您开卡首充时间为${cardPhoneFirstTime},首充金额为${cardPhoneFirstMoney},已领取${
+                total - surplusNum
+              }次，还剩${surplusNum}次`,
+            );
+          }, 2000);
           getCode();
         }
-      } else {
-        Toast('请输入正确的手机号');
+      });
+    };
+    const handleSentCode = () => {
+      if (phoneValue.value === '') {
+        return Toast('手机号不能为空');
       }
-      if (codeFlag.value) {
-        codeFlag.value = false;
+      if (/^[1][3,4,5,6,7,8,9][0-9]{9}$/.test(phoneValue.value)) {
+        if (codeFlag.value) {
+          return handleReceivePurview();
+        }
+      } else {
+        return Toast('请输入正确的手机号');
       }
     };
     const toReceive = () => {
-      getReceive({ phoneNum: phoneValue.value, productId: 'AQYM' }).then(
+      submitByCard({ phoneNum: phoneValue.value, productId: 'AQYM' }).then(
         (res: any) => {
-          if (res.code === '200' || res.code === 200) {
+          if (res.code === 200) {
             Toast('领取成功，请查收短信通知');
             phoneValue.value = '';
             codeValue.value = '';
@@ -104,7 +119,7 @@ export default defineComponent({
       if (phoneValue.value && codeValue.value) {
         getCheckCode({ phone: phoneValue.value, code: codeValue.value }).then(
           (res: any) => {
-            if (res.code === '200' || res.code === 200) {
+            if (res.code === 200) {
               toReceive();
             }
           },
@@ -113,12 +128,12 @@ export default defineComponent({
         Toast('请输入手机号/验证码');
       }
     };
-
     return {
       showTxt,
       phoneValue,
       codeValue,
       handleSentCode,
+      handleReceivePurview,
       getCode,
       handleClick,
       toReceive,

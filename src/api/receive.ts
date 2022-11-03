@@ -19,3 +19,13 @@ export const getReceive = async (data = {}): Promise<HttpResponse> => request('/
   method: 'post',
   data,
 });
+// 查看会员领取次数
+export const getReceivePurview = async (data = {}): Promise<HttpResponse> => request('/api/aftermarket/queryReceivePurview', {
+  method: 'post',
+  data,
+});
+// 会员权益领取
+export const submitByCard = async (data = {}): Promise<HttpResponse> => request('/api/ls/submitByCard', {
+  method: 'post',
+  data,
+});
