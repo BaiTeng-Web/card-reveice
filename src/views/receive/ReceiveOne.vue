@@ -83,7 +83,9 @@ export default defineComponent({
               }次，还剩${surplusNum}次`,
             );
           }, 2000);
-          getCode();
+          if (surplusNum > 0) {
+            getCode();
+          }
         }
       });
     };
