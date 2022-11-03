@@ -7,7 +7,7 @@ export interface HttpResponse {
   data: any
 }
 
-export const getVerificationCode = async (data = {}): Promise<HttpResponse> => request('/api/message/sendMessage', {
+export const getVerificationCode = async (data = {}): Promise<HttpResponse> => request('/api/message/sendMessageVIP', {
   method: 'post',
   data,
 });
